@@ -204,3 +204,10 @@ map  快捷键触发命令 取消:unmap
 
 hwclock hardware clock 硬件时钟
 date 是软件时钟
+
+查看硬盘的分区 #sudo fdisk -l
+查看IDE硬盘信息 #sudo hdparm -i /dev/hda
+查看STAT硬盘信息 #sudo hdparm -I /dev/sda 或 #sudo apt-get install blktool #sudo blktool /dev/sda id
+查看硬盘剩余空间 #df -h #df -H
+查看目录占用空间 #du -hs 目录名
+优盘没法卸载 #sync fuser -km /media/usbdisk
