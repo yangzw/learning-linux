@@ -211,3 +211,6 @@ date 是软件时钟
 查看硬盘剩余空间 #df -h #df -H
 查看目录占用空间 #du -hs 目录名
 优盘没法卸载 #sync fuser -km /media/usbdisk
+
+返回上次所在的命令：cd -
+将当前的应用程序移动到别的窗口：Ctrl+Shift+Alt+上下左右
