@@ -161,66 +161,6 @@ ifconfig 选项[-a] [网卡设备标识]
 shutdown 系统关机命令
 reboot 重启
 ---------------------------------------------------------------------------------
-
-cat /etc/shells查看系统中安装的shell
-type 查看命令是外部命令还是bash内置命令
-
-命令补全功能Tab键
-clear清屏 ctrl+l
-ctrl+u 将命令行光标前所有的字符
-history 查看命令历史记录
-
-命令别名
-如alias xrm="rm -r"
-删除别名：如unalias xrm
-
-输入输出重定向
-0(STDIN)	标准输入
-1(STDOUT)	标准输出
-2(STDERR)	标准错误输出
-> 输出重定向 >> 追加
-< 输入重定向
-2> 错误输出重定向
-
-管道
-将一个命令的输出传送给另一个命令,作为另一个命令的输入
-例:ls -l /etc | more
-
-命令连接符
-; 间隔的各命令按顺序依次执行
-&& 前后命令的执行存在逻辑与关系，只有&&前面的命令执行成功后它后面的命令才被执行
-|| 前后命令的执行存在逻辑或关系,只有||前面的命令执行错误后，后面的命令才会执行
-
-命令替换符
-将一个命令的输出作为另一个命令的参数
-命令1 '命令2'
-ls -l 'which touch' ///使用时出问题？
-
-du 查看文件或者文件夹大小 ,如果不列出文件的参数，会循环列出所有文件和文件夹所使用的空间
-df 查看一级文件夹大小、使用比例、档案系统及其挂入点，但对文件却无能为力
-[-h]使用GB MB等格式
-
-vi/vim
-r 文件名 导入文件内容到正在编辑的文件中
-map  快捷键触发命令 取消:unmap
-连续行注释	：n1,n2s/^/#/g
-去注释		:n1,n2s/^#//g
-:ab mymail capitanyang@gmail.com  替换, 取消替换:unab
-
-hwclock hardware clock 硬件时钟
-date 是软件时钟
-
-查看硬盘的分区 #sudo fdisk -l
-查看IDE硬盘信息 #sudo hdparm -i /dev/hda
-查看STAT硬盘信息 #sudo hdparm -I /dev/sda 或 #sudo apt-get install blktool #sudo blktool /dev/sda id
-查看硬盘剩余空间 #df -h #df -H
-查看目录占用空间 #du -hs 目录名
-优盘没法卸载 #sync fuser -km /media/usbdisk
-
-返回上次所在的命令：cd -
-将当前的应用程序移动到别的窗口：Ctrl+Shift+Alt+上下左右
-
-====================
 分区
 fdisk
 磁盘格式化
@@ -260,6 +200,75 @@ dos2unix
 unix2dos
 
 ====================================
+
+bash
+---------------------------------------------------------------------------------
+bash 的进站和欢迎信息 /etc/issue,/etc/motd
+
+cat /etc/shells查看系统中安装的shell
+type 查看命令是外部命令还是bash内置命令
+type -a command 可以查看command的搜索顺序
+
+命令补全功能Tab键
+clear清屏 ctrl+l
+ctrl+u 将命令行光标前所有的字符
+history 查看命令历史记录
+历史写在.bash_history中, 最多有HISTSIZE这么多,最后注销的shell会把前面的history重写,所以只记录它的
+运行历史命令:!number    !command   !!
+CTRL+R搜索命令
+
+命令别名
+如alias xrm="rm -r"
+删除别名：如unalias xrm
+
+输入输出重定向
+0(STDIN)	标准输入
+1(STDOUT)	标准输出
+2(STDERR)	标准错误输出
+> 输出重定向 >> 追加
+< 输入重定向
+<<表示输入的结束字符
+2> 错误输出重定向
+command > file 2>&1 将错误与正确的输出都输入到file中
+
+管道
+将一个命令的输出传送给另一个命令,作为另一个命令的输入
+例:ls -l /etc | more
+
+命令连接符
+; 间隔的各命令按顺序依次执行
+&& 前后命令的执行存在逻辑与关系，只有&&前面的命令执行成功后它后面的命令才被执行
+|| 前后命令的执行存在逻辑或关系,只有||前面的命令执行错误后，后面的命令才会执行
+
+命令替换符
+将一个命令的输出作为另一个命令的参数
+命令1 `命令2`
+ls -l `which touch` 
+
+du 查看文件或者文件夹大小 ,如果不列出文件的参数，会循环列出所有文件和文件夹所使用的空间
+df 查看一级文件夹大小、使用比例、档案系统及其挂入点，但对文件却无能为力
+[-h]使用GB MB等格式
+
+vi/vim
+r 文件名 导入文件内容到正在编辑的文件中
+map  快捷键触发命令 取消:unmap
+连续行注释	：n1,n2s/^/#/g
+去注释		:n1,n2s/^#//g
+:ab mymail capitanyang@gmail.com  替换, 取消替换:unab
+
+hwclock hardware clock 硬件时钟
+date 是软件时钟
+
+查看硬盘的分区 #sudo fdisk -l
+查看IDE硬盘信息 #sudo hdparm -i /dev/hda
+查看STAT硬盘信息 #sudo hdparm -I /dev/sda 或 #sudo apt-get install blktool #sudo blktool /dev/sda id
+查看硬盘剩余空间 #df -h #df -H
+查看目录占用空间 #du -hs 目录名
+优盘没法卸载 #sync fuser -km /media/usbdisk
+
+返回上次所在的命令：cd -
+将当前的应用程序移动到别的窗口：Ctrl+Shift+Alt+上下左右
+
 环境变量
 echo
 export 使自定义的变量能够被子程序所使用,假如命令后面没有加参数，将会把所有环境变量列出来
@@ -301,3 +310,42 @@ ulimit [-SHacdfltu] [配额]
 -u  ：单一用户可以使用的最大程序(process)数量。
 
 变量内容的删除、取代与替换
+从前往后    #最短  ##最长
+从后往前	%最短 %%最长
+${变量/旧字符/新字符}   第一个替换
+//旧字符/新字符   全部替换
+
+变量的测试与内容替换
+var=${str-expr}	当 str没有配置的时候var=expr,str已经配置,则var=$str
+var=${str:-expr} 比上面多一个，即当str为空字符串的时候，上面的var未配置，而在这里为expr
+
+var=${str+expr} str未配置:var=空,其余两种情况都为var=expr
+:+              str未配置:var=空，str为空字符串var=空，其他var=expr
+
+var=${str=expr} str未配置:str=expr var=expr;str为空字符串:str不变,var=空，其他str不变,var=$str
+:=   当str为空的时候和上面不一样，str=expr var=expr
+
+var=${str?expr} str未配置:expr输出至stderr,str为空字符串,var=空，其余var=￥str
+:?               不同:str为空的是偶，expr输出至stderr
+
+============================
+bash 的环境变量
+login shell登录以后会读取下面两个配置文件:
+/etc/profile:系统整体的配置文件
+~/.bash_profile or ~/.bash_login or ~/.profile 属于使用者个人的数据
+
+source 读入环境配置文件的内容
+
+non-login shell 会读取~/.bashrc文件
+
+/etc/man.config (在我的ubuntu下是manpath.config):规定man的寻找path
+
+终端机的环境配置:stty set
+stty -a 列出所有按键与按键内容
+set 配置终端
+/etc/inputrc 按键配置
+====================
+
+正则表达式
+====================
+
