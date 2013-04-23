@@ -95,13 +95,27 @@ w		写权限		可以修改文件内容	可以在目录中创建，删除文件
 x		执行权限	可以执行文件		可以进入目录
 ------------------------------
 
-chown [用户][文件或目录] 改变文件所有者
-chgrp [祖名][文件或目录] 改变所属组
+chown [用户][文件或目录] 改变文件所有者 -R递归目录
+chgrp [祖名][文件或目录] 改变所属组 -R递归目录
 useradd添加用户	passwd设置密码
 umask -S 查看系统创建文件时的默认权限
 umask
 输出为0022,  其中 0-特殊限位	022用户权限位，权限掩码值 用777-022=的才是权限值
+文件默认权限是777-umask 目录是666-umask 
+普通用户默认002，根为022
 umask 掩码值改变系统创建文件的权限值
+
+还有三个特殊权限: 
+权限 
+suid 对与文件：以文件所属用户身份执行，而非执行文件的用户 
+对与目录：无 
+sgid 对于文件：以文件所属组身份执行 
+对于目录：在该目录中创建的任意新文件的所属组与该目录的所属组相同 
+sticky 对于文件：无 对于目录：对目录拥有写入权限的用户仅可以删除其拥有的文件，无法删除其他用户所拥有的文件 
+设置suid / sgid / sticky 
+chmod u+s/g+s/o+t 
+SUID = 4 SGID = 2 Sticky=1 
+所以：例子：chmod 4755 tmp
 
 chattr 设置文件隐藏属性
 lsattr 显示
@@ -190,21 +204,48 @@ bzip2 [选项][-k][压缩文件]
 ============================
 网络
 -----------------
+网络基础
+----------
+ipv4 : 32bit 网络部分+主机部分 
+子网掩码:确定网络部分的位数 通过比较网络部分是否相同来判断是否处于同一网络 
+每个域名对应一个或多个IP地址： 主机名 域名 类型 
+DNS 用来在IP与域名之间进行转换 
+局域网通信的计算机： IP地址 子网掩码 
+跨网段通信计算机: IP地址 子网掩码 网关 
+可上网的: IP地址 子网掩码 网关 DNS
+--------------------------------------
+以太网口：eth0 eth1等 
+lspci查看网卡硬件信息 
+lsusb 查看usb设备 
+ifconfig查看接口信息 
+ifup/ifdown 来启用/禁用一个接口 
+setup 命令配置网络信息(ubuntu貌似没有) 
+
+网卡配置文件: 网卡配置文件：/etc/sysconfig/network-scripts/ifcfg-ech0(ubuntu 不在,在/etc/network /etc/NetworkManager ?) 
+DNS配置文件:/etc/resolv.conf 
+主机名配置文件:/etc/sysconfig/network(貌似ubuntu不对 
+
+ping 网络测试命令 
+ping 选项 IP地址
+ping -c 次数 	ping的次数
+ping -s 发的包大小
+测试DNS解析 host, dig 
+查看路由表 ip route 
+追踪到达目标地址所经过的路由设备 traceroute 
+进行网络质量测试 mtr 
+修改主机名： hostname 
+
+故障排查： 
+先查看网络配置：IP 子网掩码 DNS 
+查看网关是否连通：ping 
+查看DNS解析是否正常:host
+
 
 网络通信指令
 write <用户名> 向另一个用户发送信息，以Ctrl+D结束
 
 wall 向所有用户广播信息
 wall [message]
-
-ping 测试网络连通性
-ping 选项 IP地址
-ping -c 次数 	ping的次数
-ping -s 发的包大小
-
-ifconfig 选项[-a] [网卡设备标识]
-		-a 显示所有网卡信息
-查看网络设置信息改变网络ip设置
 
 ================================
 磁盘和文件系统
@@ -425,6 +466,24 @@ set 配置终端
 
 正则表达式
 
+-----------------------
+Linux 命令行文本处理工具
+--------------------
+grep 
+-i 忽略大小写 -n 显示结果所在行数 -v 输出不带关键字的行 
+-Ax输出时包含结果所在行之后的指定行数 -Bx输出时包含结果所在行之前的指定行数 
+基于列文本 
+cut -d: -f1 /etc/passwd -d 指定分割符 -f 指定输出的列号 -c 基于字符进行切割 
+文本统计
+wc -l 只统计行数 -w 只统计单词信息 -c 只统计字节数 -m 字符数 
+文本排序 
+sort 对文本内容进行排序 sort -u 可以删除重复行 
+uniq可以删除重复的相邻行 
+文本比较 
+diff -i 忽略大小写 -b忽略空格数量的改变 -u 统一显示比较信息（一般用以生成patch文件) 
+处理文本内容 
+删除关键字：tr -d 'key_words' < file 转换大小写: tr 'a-z' 'A-Z' < file 
+搜索替换: sed
 
 ====================
 LINUX用户
@@ -434,10 +493,134 @@ LINUX用户
 -系统用户(1-499) 
 -普通用户(500以上) 
 
-/etc/passwd /etc/shadow /etc/group 
+/etc/passwd 
+/etc/shadow
+格式：
+帐号名称 口令 最近更动口令的日期 口令不可更改的天数 口令需要重新变更的天数 口令需要变更期限前的警告天数 口令过期后的帐号宽限时间 帐号失效日期 保留
+/etc/group 
+格式:
+组名 群组口令 GID 此群组支持的帐号名称
+/etc/gshadow
+格式:
+组名 群组口令(!表示没有群组管理员) 群组管理员帐号 该群组所属的帐号
+
+有效群组与初始群组
+groups 输出的第一个群组即为有效群组，即新建文件时默认的群组
+newgrp 有效群组的切换
 
 whoami查看当前用户 
 who 显示有哪些用户已经登录系统 
 w 显示有那些用户已经登录，并且干了什么 
-创建一个用户: useradd name （如果不加任何参数的话将会产生三无产品) 会将/etc/skel/文件中的文件复制到用户的目录中 usermod 修改 userdel 删除用户(保留家目录， -r 则删除) groupadd groupmod -n修改组名字 groupmod -g修改组ID groupdel
+创建一个用户: 
+useradd name （如果不加任何参数的话将会产生三无产品),会将/etc/skel/文件中的文件复制到用户的目录中 
+useradd -D能够查看useradd的默认值
+设置在/etc/default/useradd /etc/login.defs,for more check the man useradd
+使用 useradd 创建了账号之后 passwd 配置新口令
+passwd -S username 
+passwd -l  -u
+chage -l username //list the info
+chage username //set the info
+example:
+chage -d 0 username //使用者在第一次登陆时， 强制她们一定要更改口令后才能够使用系统资源
+usermod 修改 
+userdel 删除用户(保留家目录， -r 则删除) 
 
+finger 查阅很多用户相关的信息
+chfn //changing finger information
+chsh //changing shell
+id 询某人或自己的相关 UID/GID 等等的信息
+
+groupadd groupmod -n修改组名字 groupmod -g修改组ID 
+groupdel
+gpasswd 群组管理员功能
+
+---------------------
+ACL
+------------------
+如果想要每次启动都生效，那就这样做
+vi /etc/fstab
+LABEL=/1   /   ext3    defaults,acl    1 1
+ACL 的配置技巧:
+getfacl
+setfacl -d使目录底下的继承
+
+-----------------
+使用者身份切换
+su -  切换至root,加了-以后会是使用login-shell的变量文件读取方式来登录系统
+su -l 切换至别的用户
+
+sudo  /etc/sudoers内的用户才能够运行sudo这个命令
+sudo -u 后面接欲切换的使用者
+
+visudo 配置/etc/sudoers
+/etc/sudoers格式:
+使用者账号  登陆者的来源主机名=(可切换的身份)  可下达的命令
+root                         ALL=(ALL)           ALL
+还可以群组,ubuntu下就因为用户属于sudo群组,可以用sudo 执行root命令
+
+passwd 里面的/sbin/nologin，不需要登录,因为是系统帐号或者邮件帐号
+创建/etc/nologin.txt,说明不能登录的原因
+
+-------------------
+PAM模块
+--------------
+PAM验证模块
+/etc/pam.d/*:每个程序个别的PAM配置文件
+/lib/security/*:PAM模块文件的实际放置目录
+/etc/security/*:其他PAM环境的配置文件
+/usr/share/doc/pam-*/:详细的PAM说明文件
+
+若发生无法登录或者是一些你无法预期的错误时，会PAM模块会将数据记录在/var/log/secure中, 多重登录的错误可以到/var/log/messages
+------------------------
+
+last 查看最近登录的用户列表
+lastlog 会读取/var/log/lastlog 文件，显示每个账户最近登录时间
+
+------------------
+使用者对谈
+------------------
+write 使用者帐号 [用户所在终端]
+mesg n 不接受任何信息
+mesg y 接受信息
+wall 对所有用户广播
+mail 用户 -s '主题' 给某个用户发邮件，'.'表示结束
+mail 查看邮件
+=========================
+Linux 启动详解
+---------------------
+BIOS MBR GRUB 加载内核 init runlevel 
+grub 相关配置文件 
+/boot/grub中grub.conf (ubuntu /etc/default/grub ? ) 
+dmesg 查看本次启动内核输出的信息 
+
+linux 运行级别: 
+0 关机 1 单用户模式 2 不带网络的多用户 3 多用户模式 4 未使用 5 Ｘ11图形化模式 6 重新启动 
+init的配置文件： 可以通过/etc/init 
+runlevel 显示当前以及上一个级别 
+init n 切换到ｎ运行级别 
+单用户修改root密码 为内核传参数“1” 或“signal”可系统进入单用户式
+用户模式不启动任何服务，这样可以直接以root用户登录，并修改密码 --> 
+grub加密
+
+
+=============================
+软件包管理
+-------------------------
+源代码形式 
+./configure 检查编译环境,相关库文件以及配置参数并生成makefile 
+make对源代码进行编译，并生成可执行文件 
+make install 将生成的可执行文件安装到当前的计算机中 
+RPM形式 rpm 安装卸载 升级 检查 验证 
+YUM形式
+
+-----------------------
+YUM软件管理
+-----------------------
+yum 与rpm 
+apt 与dpkg 
+由于现在使用的是ubuntu，所以有空再研究yum吧
+
+--------------------
+磁盘配置
+---------------
+Quota磁盘配额
