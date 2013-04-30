@@ -750,3 +750,5 @@ Linux 常见的登陆文件档名
 /var/log/secure
 /var/log/wtmp,/var/log/faillog
 /var/log/httpd/*,/var/log/news/*,/var/logsamba/*
+
+
