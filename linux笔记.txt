@@ -624,3 +624,129 @@ apt 与dpkg
 磁盘配置
 ---------------
 Quota磁盘配额
+由于笔记本/home不是分开的，所以没有实验．下次研究
+-------------
+
+----------------------
+磁盘阵列:RAID
+RAID 0/RAID 1/RAID 0+1/RAID 5/RAID 6
+Spare Disk 预备磁碟的功能：平时不使用，当一颗磁碟坏了，就立即使用它重建数据系统
+创建软件磁盘阵列
+mdadm
+----------------------
+LVM 磁盘卷轴管理
+修改文件系统大小
+系统快照
+
+-------------
+例行命令
+---------
+at 
+执行一次
+/etc/at.deny 或者/etc/at.allow中指定了能够或者不能够使用at的用户
+例子:at now + 5 minutes
+at HH:MM [YYYY-MM-DD]
+
+atq 查询有多少项at在执行
+atrm 工作号    删除
+
+batch　利用at进行命令的下达，只有系统负载小于0.8时才执行
+
+crontab
+/etc/cron.allow  或者/etc/cron.deny
+/etc 下有cron*表示系统每周/月/天执行的脚本 
+crontab -e 就可以编写脚本  -l 查看 -r 删除
+每个用户的crontab文件在/var/spool/cron中
+/etc/crontab  里面runt-parts,表示运行后面目录里面的可运行程序
+周和日月不可以同时并存
+/etc/init.d/crond restart
+
+anacron  完成系统因为关机而没有完成的例行程序，一般在系统启动期间或者写入crontab的排程中
+
+=================
+程序管理
+-------------------
+job管理
+前景   背景   //与终端机有关，不是说系统的背景
+在命令后加 & ，直接将命令丢到背景中,丢到背景中的最好是将stdout以及stderr重定向
+将目前的工作丢到背景中 CTRL+z 使用vi时
+jobs 观察目前的背景工作状态
+fg %jobnumber 将工作号为jobnumber的背景拿到前景来处理
+bg %jobnumber将工作号为jobnumber的背景工作在背景地下运行
+
+kill -signal PID 将工作杀死 -9 立刻强制　　-15 以正常方式终止程序 -1 启动被终止的程序，并且可让该PID重新读取自己的配置档　
+killall 将系统中所有一某个命令名称启动的程序全部删除
+
+nohup 可以让你在离线或注销系统以后还能让工作继续进行．
+nohup 命令 &
+
+ps aux
+  VSZ:代表process所占的虚拟内存量Kbytes
+  RSS:该process所占的固定内存量Kbytes
+  STAT:状态
+  START:启动时间
+  TIME:实际使用CPU运行的时间
+  COMMAND:改程序的实际命令
+ps -l 只查阅自己的bash程序
+pstree 显示进程直接的关系，以tree的形式
+
+top 动态观察程序的变化
+r 能够给某一个进程一个nice号(和优先级差不多
+
+nice 新运行的命令即给予新的nice值
+renice 已存在的程序的nice重新调整
+uptime 查看系统负载与系统启动时间
+free观察内存使用情况
+uname 查阅系统与核心相关资讯
+netstat 分别显示网络的连线以及linux上面的socket程序相关性部分
+dmesg:分析核心产生的信息
+vmstat 侦测系统资源变化
+
+/proc/*
+fuser:找出正在使用某个文件的程序 -k可以删除某一个PID
+lsof:列出被程序所开启的文档名
+例:lsof +d /dev
+pidof:找出某支正在运行的程序的PID
+
+================
+SELinux
+ubuntu 还没有装，暂不研究
+
+======================
+服务
+==============
+/etc/services 配置服务与端口对应
+/etc/init.d/* : 各项服务的启动脚本放置处
+/etc/sysconfig/*:各项服务的初始化环境配置文件
+/etc/* :各服务各自的配置文件
+/var/lib/* :各服务长生的数据库
+/var/run/* :各服务程序之PID记录处
+
+ldd 查询某个程序的动态函式库支持状态
+
+可以用/etc/init.d/* restart/stop等，也可以直接service
+
+配置防火墙:
+/etc/hosts.allow 和 /etc/hosts.deny 是/usr/sbin/tcpd的配置文件
+
+TCP Wrappers:
+对于扫描我主机的,可以将其信息记住，并处理，在hosts.allow或者hosts.deny中使用如下：
+spawn/twist
+
+配置启动后立即启动服务的方法
+chkconfig :管理系统服务默认启动与否
+chkconfig --list :仅将目前的各项服务状态栏出来
+chkconfig --level配置某个服务在给level下启动
+chkconfig --add:添加一个服务名给chkconfig,该服务名称必须在/etc/init.d内
+chkconfig --del:删除一个
+
+==================
+Linux 常见的登陆文件档名
+/var/log/cron
+/var/log/dmesg 系统启动过程中核心侦测过程产生的各项资讯
+/var/log/lastlog 记录系统上面所有账号最近一次登陆系统时的资讯
+/var/log/mail/*
+/var/log/messgaes 发生的错误信息
+/var/log/secure
+/var/log/wtmp,/var/log/faillog
+/var/log/httpd/*,/var/log/news/*,/var/logsamba/*
